@@ -1,0 +1,10 @@
+[SddmGreeterTheme]
+Name=SphinxOS
+Description=SphinxOS SDDM greeter theme
+Author=Milan Suman, Goutham Sreeram, Shaun Varghese
+License=GPL-2.0
+Type=sddm-theme
+Version=0.1
+MainScript=Main.qml
+Theme-API=2.0
+QtVersion=6
