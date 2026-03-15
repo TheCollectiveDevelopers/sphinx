@@ -173,4 +173,10 @@ Rectangle{
             id: passwordInput
         }
     }
+
+    TopBar {
+        anchors.top: parent.top
+        width: parent.width
+        z: 10
+    }
 }
