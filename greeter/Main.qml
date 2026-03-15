@@ -109,7 +109,7 @@ Rectangle{
 
         ListView {
             id: userList
-            width: 500
+            width: greeter.width
             height: 80
             anchors.horizontalCenter: parent.horizontalCenter
             orientation: ListView.Horizontal

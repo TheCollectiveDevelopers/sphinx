@@ -1,7 +1,7 @@
 import QtQuick
 import Qt5Compat.GraphicalEffects
 
-Item{
+Rectangle{
     id: avatar
 
     property bool selected: false
@@ -9,6 +9,8 @@ Item{
 
     width: 100
     height: 100
+    color: "#88000000"
+    radius: width / 2
 
     Image{
         id: content
