@@ -27,6 +27,13 @@ Rectangle{
         onTriggered: currentTime = new Date()
     }
 
+    Timer {
+        interval: 1000 * 60 * 5
+        running: true
+        repeat: true
+        onTriggered: interacted = false
+    }
+
     AnimatedImage{
         id: bg
         anchors.fill: parent
@@ -103,7 +110,7 @@ Rectangle{
         ListView {
             id: userList
             width: 500
-            height: 60
+            height: 80
             anchors.horizontalCenter: parent.horizontalCenter
             orientation: ListView.Horizontal
             spacing: 16
@@ -111,17 +118,31 @@ Rectangle{
             model: userModel
             currentIndex: userModel.lastIndex
 
-            preferredHighlightBegin: width / 2 - 50
-            preferredHighlightEnd: width / 2 + 50
+            preferredHighlightBegin: width / 2 - 40
+            preferredHighlightEnd: width / 2 + 40
             highlightRangeMode: ListView.StrictlyEnforceRange
 
             delegate: Item {
                 id: userDelegate
-                height: 60
-                width: 60
+                anchors.verticalCenter: parent.verticalCenter
+                width: isSelected ? 80 : 50
+                height: isSelected ? 80 : 50
+                opacity: isSelected ? 1 : 0.8
                 property bool isSelected: ListView.isCurrentItem
                 property string userName: model.name
                 property string realName: model.realName
+
+                Behavior on width {
+                    NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                }
+
+                Behavior on height {
+                    NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                }
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                }
 
                 Avatar {
                     anchors.centerIn: parent
@@ -142,7 +163,7 @@ Rectangle{
             anchors.horizontalCenter: parent.horizontalCenter
             text: userList.currentItem.realName ? userList.currentItem.realName : userList.currentItem.userName
             color: "white"
-            font.pixelSize: 18
+            font.pixelSize: 20
             font.family: subHeadingFont.font.family
             font.letterSpacing: 0.5
         }

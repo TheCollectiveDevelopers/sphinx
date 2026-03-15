@@ -11,15 +11,6 @@ Item{
     height: 100
 
     Image{
-        id: mask
-        visible: false
-        source: selected ? "./assets/main-mask.png" : "./assets/secondary-mask.png"
-        layer.enabled: true
-        layer.smooth: true
-        sourceSize: Qt.size(400, 400)
-    }
-
-    Image{
         id: content
         visible: false
         anchors.centerIn: parent
@@ -31,6 +22,11 @@ Item{
     OpacityMask{
         anchors.fill: parent
         source: content
-        maskSource: mask
+        maskSource: Rectangle{
+            width: 400
+            height: 400
+            radius: 200
+            color: "white"
+        }
     }
 }
