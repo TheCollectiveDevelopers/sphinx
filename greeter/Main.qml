@@ -157,6 +157,10 @@ Rectangle{
                     onClicked: userList.currentIndex = index
                 }
             }
+
+            onCurrentIndexChanged: {
+                passwordInput.clear()
+            }
         }
 
         Text {
@@ -171,6 +175,11 @@ Rectangle{
         Input {
             anchors.horizontalCenter: parent.horizontalCenter
             id: passwordInput
+
+            onAccepted: () => {
+                // sddm.login(userList.currentItem.userName, passwordInput.password, 0)
+                passwordInput.error()
+            }
         }
     }
 }
