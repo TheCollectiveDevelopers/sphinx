@@ -11,18 +11,9 @@ Item {
     // stays -1 (hidden) otherwise. Can also be set explicitly from Main.qml.
     property int batteryLevel: -1
 
-    property var currentTime: new Date()
-
     FontLoader {
         id: uiFont
         source: config.subHeadingFont
-    }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: topBar.currentTime = new Date()
     }
 
     Component.onCompleted: {
@@ -127,35 +118,62 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 14
 
-        // Battery charge (shown only when available)
+        // Battery indicator (shown only when available)
         Row {
+            id: batteryIndicator
+            property bool hasBatteryData: topBar.batteryLevel >= 0
+            property int clampedLevel: Math.max(0, Math.min(100, topBar.batteryLevel))
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 5
-            visible: topBar.batteryLevel >= 0
+            spacing: 8
+            visible: true
 
-            Text {
+            Item {
                 anchors.verticalCenter: parent.verticalCenter
-                text: "\u26A1"
-                color: "white"
-                font.pixelSize: 13
+                width: 24
+                height: 12
+
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 20
+                    height: 12
+                    radius: 2
+                    color: "transparent"
+                    border.color: "#ccffffff"
+                    border.width: 1
+
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: batteryIndicator.hasBatteryData
+                               ? Math.max(2, (parent.width - 4) * batteryIndicator.clampedLevel / 100)
+                               : Math.max(2, (parent.width - 4) * 0.45)
+                        height: parent.height - 4
+                        radius: 1
+                        color: batteryIndicator.hasBatteryData
+                               ? (batteryIndicator.clampedLevel > 20 ? "#ccffffff" : "#ff8080")
+                               : "#99ffffff"
+                    }
+                }
+
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 3
+                    height: 6
+                    radius: 1
+                    color: "#ccffffff"
+                }
             }
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
-                text: topBar.batteryLevel + "%"
+                text: batteryIndicator.hasBatteryData ? (batteryIndicator.clampedLevel + "%") : "--"
                 color: "white"
                 font.pixelSize: 13
                 font.family: uiFont.font.family
             }
-        }
-
-        // Current time
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: topBar.currentTime.toLocaleTimeString(Qt.locale(), "HH:mm")
-            color: "white"
-            font.pixelSize: 14
-            font.family: uiFont.font.family
         }
 
         // Power button
