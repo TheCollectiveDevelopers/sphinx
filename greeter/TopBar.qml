@@ -5,10 +5,11 @@ Item {
     id: topBar
     width: parent.width
     height: 50
+    property int chromePadding: 10
+    property int selectedSessionIndex: sessionModel.lastIndex >= 0 ? sessionModel.lastIndex : 0
+    property color accentColor: config && config.color ? config.color : "#6f78d8"
+    property color accentDark: Qt.darker(accentColor, 180)
 
-    // Battery charge level (0–100).
-    // Auto-populated if SDDM exposes a `battery` context property;
-    // stays -1 (hidden) otherwise. Can also be set explicitly from Main.qml.
     property int batteryLevel: -1
 
     FontLoader {
@@ -24,101 +25,162 @@ Item {
         } catch (e) {}
     }
 
-    // ─── Session Selector (left) ────────────────────────────────────────────
+    // ─────────────────────────────────────────
+    // Session switcher
+    // ─────────────────────────────────────────
 
-    ComboBox {
-        id: sessionSelector
+    Item {
+        id: sessionSwitcher
         anchors.left: parent.left
-        anchors.leftMargin: 20
-        anchors.verticalCenter: parent.verticalCenter
-        model: sessionModel
-        textRole: "name"
-        currentIndex: sessionModel.lastIndex
-        onActivated: sessionModel.lastIndex = currentIndex
+        anchors.leftMargin: topBar.chromePadding
+        anchors.topMargin: topBar.chromePadding
+        anchors.top: parent.top
+        width: 220
+        height: 36
 
-        background: Rectangle {
-            implicitWidth: 160
-            implicitHeight: 32
-            color: sessionSelector.pressed ? "#66000000" : "#44000000"
-            radius: 16
+        Rectangle {
+            id: cogButton
+            width: 34
+            height: 34
+            radius: 18
+            color: cogMouse.containsMouse ? "#55000000" : "#33000000"
             border.color: "#33ffffff"
             border.width: 1
 
-            Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on color { ColorAnimation { duration: 140 } }
+
+            Text {
+                anchors.centerIn: parent
+                text: "\u2699"
+                color: "white"
+                font.pixelSize: 16
+                font.family: uiFont.font.family
+            }
+
+            MouseArea {
+                id: cogMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    if (sessionPanel.opened)
+                        sessionPanel.close()
+                    else
+                        sessionPanel.open()
+                }
+            }
         }
 
-        contentItem: Text {
-            leftPadding: 14
-            rightPadding: 28
-            text: sessionSelector.displayText
-            color: "white"
-            font.pixelSize: 13
-            font.family: uiFont.font.family
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-        }
-
-        indicator: Text {
-            x: sessionSelector.width - width - 12
-            y: (sessionSelector.height - height) / 2
-            text: sessionSelector.popup.visible ? "\u25B4" : "\u25BE"
-            color: "#99ffffff"
-            font.pixelSize: 9
-        }
-
-        popup: Popup {
-            y: sessionSelector.height + 4
-            width: sessionSelector.width
-            padding: 6
+        Popup {
+            id: sessionPanel
+            x: sessionSwitcher.x
+            y: sessionSwitcher.y + cogButton.height + 8
+            width: parent.width
+            height: 170
+            padding: 0
             closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
+            enter: Transition {
+                ParallelAnimation {
+                    NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 180; easing.type: Easing.OutCubic }
+                    NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: 220; easing.type: Easing.OutCubic }
+                }
+            }
+
+            exit: Transition {
+                ParallelAnimation {
+                    NumberAnimation { property: "opacity"; from: 1; to: 0; duration: 140; easing.type: Easing.OutCubic }
+                    NumberAnimation { property: "scale"; from: 1.0; to: 0.97; duration: 140; easing.type: Easing.OutCubic }
+                }
+            }
+
             background: Rectangle {
-                color: "#EE141414"
-                radius: 12
+                radius: 14
+                color: Qt.alpha(topBar.accentDark, 0.38)
                 border.color: "#33ffffff"
                 border.width: 1
             }
 
-            contentItem: ListView {
-                implicitHeight: contentHeight
-                model: sessionSelector.delegateModel
-                currentIndex: sessionSelector.highlightedIndex
-                clip: true
-            }
-        }
+            Column {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 8
 
-        delegate: ItemDelegate {
-            width: sessionSelector.width - 12
-            height: 36
-            highlighted: sessionSelector.highlightedIndex === index
+                ComboBox {
+                    id: sessionProxy
+                    visible: false
+                    model: sessionModel
+                    textRole: "name"
+                }
 
-            background: Rectangle {
-                color: highlighted ? "#44ffffff" : "transparent"
-                radius: 8
-                Behavior on color { ColorAnimation { duration: 120 } }
-            }
+                ListView {
+                    id: sessionsList
+                    width: parent.width
+                    height: parent.height
+                    model: sessionProxy.delegateModel
+                    clip: true
+                    spacing: 6
 
-            contentItem: Text {
-                leftPadding: 8
-                text: model.name
-                color: "white"
-                font.pixelSize: 13
-                font.family: uiFont.font.family
-                verticalAlignment: Text.AlignVCenter
+                    delegate: Rectangle {
+
+                        required property int index
+
+                        width: sessionsList.width
+                        height: 30
+                        radius: 9
+
+                        scale: sessionMouse.containsMouse ? 1.02 : 1
+
+                        color: topBar.selectedSessionIndex === index
+                               ? Qt.alpha(topBar.accentColor, 0.45)
+                               : (sessionMouse.containsMouse
+                                  ? Qt.alpha(topBar.accentColor, 0.28)
+                                  : "#30000000")
+
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                        Behavior on scale { NumberAnimation { duration: 120 } }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 10
+                            text: sessionProxy.textAt(index)
+                            color: "white"
+                            font.pixelSize: 13
+                            font.family: uiFont.font.family
+                            elide: Text.ElideRight
+                            width: parent.width - 20
+                        }
+
+                        MouseArea {
+                            id: sessionMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: {
+                                topBar.selectedSessionIndex = index
+                                sessionPanel.close()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
-    // ─── Right-side status row ──────────────────────────────────────────────
+    // ─────────────────────────────────────────
+    // Right-side status row
+    // ─────────────────────────────────────────
 
     Row {
         id: statusRow
         anchors.right: parent.right
-        anchors.rightMargin: 20
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.rightMargin: topBar.chromePadding
+        anchors.top: parent.top
+        anchors.topMargin: topBar.chromePadding
         spacing: 14
 
-        // Battery indicator (shown only when available)
         Row {
             id: batteryIndicator
             property bool hasBatteryData: topBar.batteryLevel >= 0
@@ -176,14 +238,13 @@ Item {
             }
         }
 
-        // Power button
         Rectangle {
             id: powerBtn
             anchors.verticalCenter: parent.verticalCenter
-            width: 32
-            height: 32
+            width: 34
+            height: 34
             radius: 16
-            color: powerBtnMA.containsMouse ? "#66000000" : "#44000000"
+            color: powerBtnMA.containsMouse ? "#55000000" : "#33000000"
             border.color: "#33ffffff"
             border.width: 1
 
@@ -193,7 +254,7 @@ Item {
                 anchors.centerIn: parent
                 text: "\u23FB"
                 color: "white"
-                font.pixelSize: 15
+                font.pixelSize: 16
             }
 
             MouseArea {
@@ -209,7 +270,9 @@ Item {
         }
     }
 
-    // ─── Power menu popup ───────────────────────────────────────────────────
+    // ─────────────────────────────────────────
+    // Power menu
+    // ─────────────────────────────────────────
 
     Popup {
         id: powerMenu
@@ -218,14 +281,14 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            color: "#EE141414"
-            radius: 12
+            color: Qt.alpha(topBar.accentDark, 0.38)
+            radius: 14
             border.color: "#33ffffff"
             border.width: 1
         }
 
         contentItem: Column {
-            spacing: 4
+            spacing: 6
 
             Repeater {
                 model: ListModel {
@@ -235,23 +298,27 @@ Item {
                 }
 
                 delegate: Rectangle {
+
                     width: 160
-                    height: 40
-                    radius: 8
-                    color: menuItemMA.containsMouse ? "#33ffffff" : "transparent"
-                    opacity: (model.itemAction === "suspend"  && !sddm.canSuspend)  ||
-                             (model.itemAction === "reboot"   && !sddm.canReboot)   ||
-                             (model.itemAction === "powerOff" && !sddm.canPowerOff) ? 0.4 : 1.0
+                    height: 30
+                    radius: 9
+
+                    scale: menuItemMA.containsMouse ? 1.02 : 1
+
+                    color: menuItemMA.containsMouse
+                           ? Qt.alpha(topBar.accentColor, 0.28)
+                           : "#30000000"
 
                     Behavior on color { ColorAnimation { duration: 120 } }
+                    Behavior on scale { NumberAnimation { duration: 120 } }
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
-                        anchors.leftMargin: 14
+                        anchors.leftMargin: 10
                         text: model.itemLabel
                         color: "white"
-                        font.pixelSize: 14
+                        font.pixelSize: 13
                         font.family: uiFont.font.family
                     }
 
@@ -260,11 +327,16 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
+
                         onClicked: {
                             powerMenu.close()
-                            if      (model.itemAction === "suspend")  sddm.suspend()
-                            else if (model.itemAction === "reboot")   sddm.reboot()
-                            else                                      sddm.powerOff()
+
+                            if (model.itemAction === "suspend")
+                                sddm.suspend()
+                            else if (model.itemAction === "reboot")
+                                sddm.reboot()
+                            else
+                                sddm.powerOff()
                         }
                     }
                 }

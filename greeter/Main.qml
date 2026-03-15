@@ -192,7 +192,7 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     onAccepted: () => {
-                        sddm.login(userList.currentItem.userName, passwordInput.password, 0)
+                        sddm.login(userList.currentItem.userName, passwordInput.password, topBarWidget.selectedSessionIndex)
                     }
                 }
             }
@@ -207,17 +207,15 @@ Rectangle {
         }
     }
 
-<<<<<<< HEAD
     TopBar {
+        id: topBarWidget
         anchors.top: parent.top
         width: parent.width
         z: 10
     }
-}
-=======
+
     Connections {
         target: sddm
         onLoginFailed: () => greeter.loginFailed()
     }
 }
->>>>>>> 4f01bd0dc06f83e1d24e36513b7f5f80dd1ffe93
