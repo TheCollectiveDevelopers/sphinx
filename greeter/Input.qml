@@ -40,9 +40,10 @@ Rectangle{
     TextField{
         id: input
         anchors.fill: parent
-        placeholderText: "Enter your password"
+        placeholderText: " Enter password"
         placeholderTextColor: "#88D7D7D7"
         echoMode: TextInput.Password
+        color: "#FFFFFF"
 
         background: Rectangle{
             color: "transparent"

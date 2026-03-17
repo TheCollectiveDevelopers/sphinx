@@ -199,7 +199,7 @@ Rectangle {
 
             Connections {
                 target: greeter
-                onLoginFailed: () => {
+                function onLoginFailed() {
                     if (index === screenModel.primary)
                         passwordInput.error()
                 }
@@ -216,6 +216,6 @@ Rectangle {
 
     Connections {
         target: sddm
-        onLoginFailed: () => greeter.loginFailed()
+        function onLoginFailed() { greeter.loginFailed() }
     }
 }
