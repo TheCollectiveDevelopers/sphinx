@@ -11,18 +11,57 @@ Item {
     property color accentDark: Qt.darker(accentColor, 180)
 
     property int batteryLevel: -1
+    property bool showBatteryDebug: false
 
     FontLoader {
         id: uiFont
         source: config.subHeadingFont
     }
 
+    // Try to bind to battery information from SDDM
     Component.onCompleted: {
-        try {
-            if (typeof battery !== "undefined" && battery !== null) {
-                batteryLevel = Qt.binding(function () { return battery.chargeLevel })
+        // Add small delay to ensure battery object is available
+        batteryBindingTimer.start()
+    }
+
+    Timer {
+        id: batteryBindingTimer
+        interval: 100
+        running: false
+        repeat: false
+
+        onTriggered: {
+            try {
+                if (typeof battery !== "undefined" && battery !== null) {
+                    console.log("✓ Battery object available")
+
+                    if (typeof battery.chargeLevel !== "undefined") {
+                        console.log("✓ Using battery.chargeLevel")
+                        topBar.batteryLevel = Qt.binding(function() { return battery.chargeLevel })
+                    } else if (typeof battery.percent !== "undefined") {
+                        console.log("✓ Using battery.percent")
+                        topBar.batteryLevel = Qt.binding(function() { return battery.percent })
+                    } else if (typeof battery.level !== "undefined") {
+                        console.log("✓ Using battery.level")
+                        topBar.batteryLevel = Qt.binding(function() { return battery.level })
+                    } else {
+                        console.log("✗ Battery object exists but no charge property found")
+                    }
+                } else if (typeof power !== "undefined" && power !== null) {
+                    if (typeof power.battery !== "undefined") {
+                        console.log("✓ Battery available via power.battery")
+                        topBar.batteryLevel = Qt.binding(function() { return power.battery })
+                    } else {
+                        console.log("✗ Power object available but no battery property")
+                    }
+                } else {
+                    console.log("✗ Battery and power objects not available in SDDM context")
+                    console.log("  This is normal if SDDM wasn't compiled with battery support")
+                }
+            } catch (e) {
+                console.log("✗ Error binding battery:", e.toString())
             }
-        } catch (e) {}
+        }
     }
 
     // ─────────────────────────────────────────
@@ -187,7 +226,7 @@ Item {
             property int clampedLevel: Math.max(0, Math.min(100, topBar.batteryLevel))
             anchors.verticalCenter: parent.verticalCenter
             spacing: 8
-            visible: true
+            visible: topBar.batteryLevel >= 0
 
             Item {
                 anchors.verticalCenter: parent.verticalCenter
