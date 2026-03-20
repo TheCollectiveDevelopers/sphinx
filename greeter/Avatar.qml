@@ -24,6 +24,7 @@ Rectangle{
     OpacityMask{
         anchors.fill: parent
         source: content
+        cached: true
         maskSource: Rectangle{
             width: 400
             height: 400
