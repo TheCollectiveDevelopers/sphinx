@@ -26,7 +26,7 @@ jobs:
           echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
 
       - name: Create greeter archive
-        run: tar -czf "$ARCHIVE" greeter
+        run: tar -czf "$ARCHIVE" sphinx-greeter
 
       - name: Create and push tag
         run: |
