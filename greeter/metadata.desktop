@@ -11,3 +11,4 @@ ConfigFile=theme.conf
 Theme-API=2.0
 QtVersion=6
 Screenshot=preview.png
+Website=https://github.com/TheCollectiveDevelopers/sphinx
