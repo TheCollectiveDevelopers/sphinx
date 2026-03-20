@@ -31,20 +31,22 @@ Item {
 
         Rectangle {
             id: cogButton
-            width: 34
-            height: 34
-            radius: 18
+            width: 40
+            height: 40
+            radius: 100
             color: cogMouse.containsMouse ? "#55000000" : "#33000000"
             border.color: "#33ffffff"
-            border.width: 1
+            border.width: 2
 
             Behavior on color { ColorAnimation { duration: 140 } }
 
             Text {
                 anchors.centerIn: parent
+                anchors.verticalCenterOffset: + 0
+                anchors.horizontalCenterOffset: + 0.25
                 text: "\u2699"
                 color: "white"
-                font.pixelSize: 16
+                font.pixelSize: Math.round(cogButton.height * 0.66)
                 font.family: uiFont.font.family
             }
 
@@ -65,9 +67,9 @@ Item {
         Popup {
             id: sessionPanel
             x: sessionSwitcher.x
-            y: sessionSwitcher.y + cogButton.height + 8
+            y: sessionSwitcher.y + cogButton.height - 8
             width: parent.width
-            height: 170
+            height: 24 + Math.max(sessionsList.contentHeight, 30)
             padding: 0
             closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -107,7 +109,7 @@ Item {
                 ListView {
                     id: sessionsList
                     width: parent.width
-                    height: parent.height
+                    height: contentHeight
                     model: sessionProxy.delegateModel
                     clip: true
                     spacing: 6
@@ -175,20 +177,23 @@ Item {
         Rectangle {
             id: powerBtn
             anchors.verticalCenter: parent.verticalCenter
-            width: 34
-            height: 34
-            radius: 16
+            width: 40
+            height: 40
+            radius: 100
             color: powerBtnMA.containsMouse ? "#55000000" : "#33000000"
             border.color: "#33ffffff"
-            border.width: 1
+            border.width: 2
 
             Behavior on color { ColorAnimation { duration: 150 } }
 
             Text {
                 anchors.centerIn: parent
+                anchors.verticalCenterOffset: + 0
+                anchors.horizontalCenterOffset: + 0.25
                 text: "\u23FB"
                 color: "white"
-                font.pixelSize: 16
+                font.pixelSize: Math.round(powerBtn.height * 0.66)
+                font.family: uiFont.font.family
             }
 
             MouseArea {
@@ -213,6 +218,20 @@ Item {
         y: topBar.height + 4
         padding: 8
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        enter: Transition {
+            ParallelAnimation {
+                NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 180; easing.type: Easing.OutCubic }
+                NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: 220; easing.type: Easing.OutCubic }
+            }
+        }
+
+        exit: Transition {
+            ParallelAnimation {
+                NumberAnimation { property: "opacity"; from: 1; to: 0; duration: 140; easing.type: Easing.OutCubic }
+                NumberAnimation { property: "scale"; from: 1.0; to: 0.97; duration: 140; easing.type: Easing.OutCubic }
+            }
+        }
 
         background: Rectangle {
             color: Qt.alpha(topBar.accentDark, 0.38)
