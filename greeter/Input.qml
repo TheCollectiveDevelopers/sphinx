@@ -45,6 +45,9 @@ Rectangle{
         echoMode: TextInput.Password
         color: "#FFFFFF"
 
+        leftPadding: 10
+        rightPadding: 10
+
         background: Rectangle{
             color: "transparent"
         }
