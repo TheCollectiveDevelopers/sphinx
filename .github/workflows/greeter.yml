@@ -1,0 +1,48 @@
+name: Release Greeter Archive
+
+on:
+	workflow_dispatch:
+	push:
+		branches:
+			- main
+			- master
+		paths:
+			- greeter/**
+			- .github/workflows/greeter.yml
+
+permissions:
+	contents: write
+
+jobs:
+	release-greeter:
+		runs-on: ubuntu-latest
+
+		steps:
+			- name: Checkout
+				uses: actions/checkout@v4
+
+			- name: Generate tag and archive name
+				run: |
+					TAG="greeter-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+					ARCHIVE="sphinx.tar.gz"
+
+					echo "TAG=$TAG" >> "$GITHUB_ENV"
+					echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
+
+			- name: Create greeter archive
+				run: tar -czf "$ARCHIVE" greeter
+
+			- name: Create and push tag
+				run: |
+					git config user.name "github-actions[bot]"
+					git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+					git tag "$TAG"
+					git push origin "$TAG"
+
+			- name: Create GitHub release
+				env:
+					GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+				run: |
+					gh release create "$TAG" "$ARCHIVE" \
+						--title "$TAG" \
+						--notes "Automated release for greeter archive."
