@@ -48,6 +48,10 @@ Item {
                 color: "white"
                 font.pixelSize: Math.round(cogButton.height * 0.66)
                 font.family: uiFont.font.family
+                renderType: Text.NativeRendering
+                antialiasing: true
+                layer.enabled: true
+                layer.smooth: true
             }
 
             MouseArea {
@@ -143,6 +147,10 @@ Item {
                             font.family: uiFont.font.family
                             elide: Text.ElideRight
                             width: parent.width - 20
+                            renderType: Text.NativeRendering
+                            antialiasing: true
+                            layer.enabled: true
+                            layer.smooth: true
                         }
 
                         MouseArea {
@@ -194,6 +202,10 @@ Item {
                 color: "white"
                 font.pixelSize: Math.round(powerBtn.height * 0.66)
                 font.family: uiFont.font.family
+                renderType: Text.NativeRendering
+                antialiasing: true
+                layer.enabled: true
+                layer.smooth: true
             }
 
             MouseArea {
@@ -273,6 +285,10 @@ Item {
                         color: "white"
                         font.pixelSize: 13
                         font.family: uiFont.font.family
+                        renderType: Text.NativeRendering
+                        antialiasing: true
+                        layer.enabled: true
+                        layer.smooth: true
                     }
 
                     MouseArea {

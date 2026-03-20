@@ -14,6 +14,9 @@ Column {
     spacing: -10
     anchors.centerIn: parent
     transformOrigin: Item.Center
+    layer.enabled: true
+    layer.smooth: true
+    layer.textureSize: Qt.size(width * 2, height * 2)
 
     scale: root.interacted ? 0.9 : 1.0
     Behavior on scale {
@@ -33,6 +36,10 @@ Column {
         color: root.textColor
         font.pixelSize: root.headingFontSize
         font.family: root.headingFontFamily
+        renderType: Text.NativeRendering
+        antialiasing: true
+        layer.enabled: true
+        layer.smooth: true
     }
 
     Text {
@@ -42,5 +49,9 @@ Column {
         font.pixelSize: root.subHeadingFontSize
         font.family: root.subHeadingFontFamily
         font.letterSpacing: 0.5
+        renderType: Text.NativeRendering
+        antialiasing: true
+        layer.enabled: true
+        layer.smooth: true
     }
 }

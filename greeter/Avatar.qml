@@ -11,6 +11,9 @@ Rectangle{
     height: 100
     color: "#88000000"
     radius: width / 2
+    antialiasing: true
+    layer.enabled: true
+    layer.smooth: true
 
     Image{
         id: content
