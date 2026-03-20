@@ -24,7 +24,7 @@ The `greeter/` directory contains a complete Qt/QML SDDM theme (`Theme-API 2.0`,
 
 ### Preview
 
-![SphinxOS Greeter Preview](assets/preview.png)
+![SphinxOS Greeter Preview](assets/greeter-open.png)
 
 ## Using the Greeter Theme
 
