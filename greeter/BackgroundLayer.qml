@@ -8,7 +8,7 @@ Item {
     property string backgroundSource: ""
     property bool blurActive: false
 
-    Image {
+    AnimatedImage {
         id: screenBg
         anchors.fill: parent
         property bool triedFallbackPath: false
@@ -29,6 +29,15 @@ Item {
         radius: root.blurActive ? 60 : 0
 
         Behavior on radius {
+            NumberAnimation { duration: 600; easing.type: Easing.OutCubic }
+        }
+    }
+
+    Rectangle{
+        anchors.fill: parent
+        color: "#20000000"
+        opacity: root.blurActive ? 1 : 0
+        Behavior on opacity {
             NumberAnimation { duration: 600; easing.type: Easing.OutCubic }
         }
     }
