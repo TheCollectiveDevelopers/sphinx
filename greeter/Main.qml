@@ -56,11 +56,19 @@ Rectangle {
             height: geometry.height
             color: "transparent"
 
-            AnimatedImage {
+            Image {
                 id: screenBg
                 anchors.fill: parent
+                property bool triedFallbackPath: false
                 source: Qt.resolvedUrl(config.background)
                 fillMode: Image.PreserveAspectCrop
+
+                onStatusChanged: {
+                    if (status === Image.Error && !triedFallbackPath) {
+                        triedFallbackPath = true
+                        source = Qt.resolvedUrl("../" + config.background)
+                    }
+                }
             }
 
             FastBlur {

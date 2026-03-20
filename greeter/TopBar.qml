@@ -10,58 +10,10 @@ Item {
     property color accentColor: config && config.color ? config.color : "#6f78d8"
     property color accentDark: Qt.darker(accentColor, 180)
 
-    property int batteryLevel: -1
-    property bool showBatteryDebug: false
 
     FontLoader {
         id: uiFont
         source: config.subHeadingFont
-    }
-
-    // Try to bind to battery information from SDDM
-    Component.onCompleted: {
-        // Add small delay to ensure battery object is available
-        batteryBindingTimer.start()
-    }
-
-    Timer {
-        id: batteryBindingTimer
-        interval: 100
-        running: false
-        repeat: false
-
-        onTriggered: {
-            try {
-                if (typeof battery !== "undefined" && battery !== null) {
-                    console.log("✓ Battery object available")
-
-                    if (typeof battery.chargeLevel !== "undefined") {
-                        console.log("✓ Using battery.chargeLevel")
-                        topBar.batteryLevel = Qt.binding(function() { return battery.chargeLevel })
-                    } else if (typeof battery.percent !== "undefined") {
-                        console.log("✓ Using battery.percent")
-                        topBar.batteryLevel = Qt.binding(function() { return battery.percent })
-                    } else if (typeof battery.level !== "undefined") {
-                        console.log("✓ Using battery.level")
-                        topBar.batteryLevel = Qt.binding(function() { return battery.level })
-                    } else {
-                        console.log("✗ Battery object exists but no charge property found")
-                    }
-                } else if (typeof power !== "undefined" && power !== null) {
-                    if (typeof power.battery !== "undefined") {
-                        console.log("✓ Battery available via power.battery")
-                        topBar.batteryLevel = Qt.binding(function() { return power.battery })
-                    } else {
-                        console.log("✗ Power object available but no battery property")
-                    }
-                } else {
-                    console.log("✗ Battery and power objects not available in SDDM context")
-                    console.log("  This is normal if SDDM wasn't compiled with battery support")
-                }
-            } catch (e) {
-                console.log("✗ Error binding battery:", e.toString())
-            }
-        }
     }
 
     // ─────────────────────────────────────────
@@ -219,63 +171,6 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: topBar.chromePadding
         spacing: 14
-
-        Row {
-            id: batteryIndicator
-            property bool hasBatteryData: topBar.batteryLevel >= 0
-            property int clampedLevel: Math.max(0, Math.min(100, topBar.batteryLevel))
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 8
-            visible: topBar.batteryLevel >= 0
-
-            Item {
-                anchors.verticalCenter: parent.verticalCenter
-                width: 24
-                height: 12
-
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 20
-                    height: 12
-                    radius: 2
-                    color: "transparent"
-                    border.color: "#ccffffff"
-                    border.width: 1
-
-                    Rectangle {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 2
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: batteryIndicator.hasBatteryData
-                               ? Math.max(2, (parent.width - 4) * batteryIndicator.clampedLevel / 100)
-                               : Math.max(2, (parent.width - 4) * 0.45)
-                        height: parent.height - 4
-                        radius: 1
-                        color: batteryIndicator.hasBatteryData
-                               ? (batteryIndicator.clampedLevel > 20 ? "#ccffffff" : "#ff8080")
-                               : "#99ffffff"
-                    }
-                }
-
-                Rectangle {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 3
-                    height: 6
-                    radius: 1
-                    color: "#ccffffff"
-                }
-            }
-
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: batteryIndicator.hasBatteryData ? (batteryIndicator.clampedLevel + "%") : "--"
-                color: "white"
-                font.pixelSize: 13
-                font.family: uiFont.font.family
-            }
-        }
 
         Rectangle {
             id: powerBtn
