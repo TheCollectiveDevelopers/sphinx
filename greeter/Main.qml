@@ -56,11 +56,19 @@ Rectangle {
             height: geometry.height
             color: "transparent"
 
-            AnimatedImage {
+            Image {
                 id: screenBg
                 anchors.fill: parent
+                property bool triedFallbackPath: false
                 source: Qt.resolvedUrl(config.background)
                 fillMode: Image.PreserveAspectCrop
+
+                onStatusChanged: {
+                    if (status === Image.Error && !triedFallbackPath) {
+                        triedFallbackPath = true
+                        source = Qt.resolvedUrl("../" + config.background)
+                    }
+                }
             }
 
             FastBlur {
@@ -192,14 +200,14 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     onAccepted: () => {
-                        sddm.login(userList.currentItem.userName, passwordInput.password, 0)
+                        sddm.login(userList.currentItem.userName, passwordInput.password, topBarWidget.selectedSessionIndex)
                     }
                 }
             }
 
             Connections {
                 target: greeter
-                onLoginFailed: () => {
+                function onLoginFailed() {
                     if (index === screenModel.primary)
                         passwordInput.error()
                 }
@@ -207,8 +215,15 @@ Rectangle {
         }
     }
 
+    TopBar {
+        id: topBarWidget
+        anchors.top: parent.top
+        width: parent.width
+        z: 10
+    }
+
     Connections {
         target: sddm
-        onLoginFailed: () => greeter.loginFailed()
+        function onLoginFailed() { greeter.loginFailed() }
     }
 }
