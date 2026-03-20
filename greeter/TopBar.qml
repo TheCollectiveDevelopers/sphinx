@@ -6,10 +6,11 @@ Item {
     width: parent.width
     height: 50
     property int chromePadding: 10
+    property int actionButtonDiameter: 42
+    property int actionIconInset: 10
     property int selectedSessionIndex: sessionModel.lastIndex >= 0 ? sessionModel.lastIndex : 0
     property color accentColor: config && config.color ? config.color : "#6f78d8"
     property color accentDark: Qt.darker(accentColor, 180)
-
 
     FontLoader {
         id: uiFont
@@ -31,8 +32,8 @@ Item {
 
         Rectangle {
             id: cogButton
-            width: 40
-            height: 40
+            width: topBar.actionButtonDiameter
+            height: topBar.actionButtonDiameter
             radius: 100
             color: cogMouse.containsMouse ? "#55000000" : "#33000000"
             border.color: "#33ffffff"
@@ -40,18 +41,13 @@ Item {
 
             Behavior on color { ColorAnimation { duration: 140 } }
 
-            Text {
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: + 0
-                anchors.horizontalCenterOffset: + 0.25
-                text: "\u2699"
-                color: "white"
-                font.pixelSize: Math.round(cogButton.height * 0.66)
-                font.family: uiFont.font.family
-                renderType: Text.NativeRendering
-                antialiasing: true
-                layer.enabled: true
-                layer.smooth: true
+            Image {
+                anchors.fill: parent
+                anchors.margins: topBar.actionIconInset
+                source: "assets/settings.png"
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                mipmap: true
             }
 
             MouseArea {
@@ -71,7 +67,7 @@ Item {
         Popup {
             id: sessionPanel
             x: sessionSwitcher.x
-            y: sessionSwitcher.y + cogButton.height - 8
+            y: sessionSwitcher.y + cogButton.height
             width: parent.width
             height: 24 + Math.max(sessionsList.contentHeight, 30)
             padding: 0
@@ -147,10 +143,6 @@ Item {
                             font.family: uiFont.font.family
                             elide: Text.ElideRight
                             width: parent.width - 20
-                            renderType: Text.NativeRendering
-                            antialiasing: true
-                            layer.enabled: true
-                            layer.smooth: true
                         }
 
                         MouseArea {
@@ -185,8 +177,8 @@ Item {
         Rectangle {
             id: powerBtn
             anchors.verticalCenter: parent.verticalCenter
-            width: 40
-            height: 40
+            width: topBar.actionButtonDiameter
+            height: topBar.actionButtonDiameter
             radius: 100
             color: powerBtnMA.containsMouse ? "#55000000" : "#33000000"
             border.color: "#33ffffff"
@@ -194,18 +186,13 @@ Item {
 
             Behavior on color { ColorAnimation { duration: 150 } }
 
-            Text {
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: + 0
-                anchors.horizontalCenterOffset: + 0.25
-                text: "\u23FB"
-                color: "white"
-                font.pixelSize: Math.round(powerBtn.height * 0.66)
-                font.family: uiFont.font.family
-                renderType: Text.NativeRendering
-                antialiasing: true
-                layer.enabled: true
-                layer.smooth: true
+            Image {
+                anchors.fill: parent
+                anchors.margins: topBar.actionIconInset
+                source: "assets/power.png"
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                mipmap: true
             }
 
             MouseArea {
@@ -285,10 +272,6 @@ Item {
                         color: "white"
                         font.pixelSize: 13
                         font.family: uiFont.font.family
-                        renderType: Text.NativeRendering
-                        antialiasing: true
-                        layer.enabled: true
-                        layer.smooth: true
                     }
 
                     MouseArea {
