@@ -17,6 +17,18 @@ Rectangle{
         input.text = ""
     }
 
+    function focusInput(){
+        input.forceActiveFocus()
+    }
+
+    function disableInput(){
+        input.enabled = false
+    }
+
+    function enableInput(){
+        input.enabled = true
+    }
+
     transform: Translate { id: shakeTranslate }
 
     function error(){
@@ -44,6 +56,8 @@ Rectangle{
         placeholderTextColor: "#88D7D7D7"
         echoMode: TextInput.Password
         color: "#FFFFFF"
+
+        opacity: input.enabled ? 1 : 0.5
 
         leftPadding: 10
         rightPadding: 10

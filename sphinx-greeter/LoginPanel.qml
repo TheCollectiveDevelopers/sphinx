@@ -14,6 +14,10 @@ Column {
         passwordInput.error()
     }
 
+    function loginAttemptCompleted() {
+        passwordInput.enableInput()
+    }
+
     spacing: 10
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
@@ -22,6 +26,11 @@ Column {
 
     Behavior on opacity {
         NumberAnimation { duration: 600; easing.type: Easing.OutCubic }
+    }
+
+    onInteractedChanged: {
+        if (root.interacted)
+            passwordInput.focusInput()
     }
 
     UserListSelector {
@@ -46,6 +55,7 @@ Column {
 
         onAccepted: {
             if (userSelector.selectedUserName)
+                passwordInput.disableInput()
                 root.loginRequested(userSelector.selectedUserName, passwordInput.password, root.selectedSessionIndex)
         }
     }

@@ -71,6 +71,7 @@ Rectangle {
                 target: greeter
                 function onLoginFailed() {
                     screenLayer.showLoginError()
+                    screenLayer.loginAttemptCompleted()
                 }
             }
         }

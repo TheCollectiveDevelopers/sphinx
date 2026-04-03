@@ -26,6 +26,11 @@ Rectangle {
             loginPanel.error()
     }
 
+    function loginAttemptCompleted() {
+        if (isPrimary)
+            loginPanel.loginAttemptCompleted()
+    }
+
     x: screenGeometry ? screenGeometry.x : 0
     y: screenGeometry ? screenGeometry.y : 0
     width: screenGeometry ? screenGeometry.width : 0
