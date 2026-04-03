@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - greeter/**
+      - sphinx-greeter/**
       - .github/workflows/greeter.yml
 
 jobs:
